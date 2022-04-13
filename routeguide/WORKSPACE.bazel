@@ -37,7 +37,8 @@ protobuf_deps()
 
 maven_install(
     artifacts = [
-        "org.mockito:mockito-core:4.3.1"
+        "org.mockito:mockito-core:4.3.1",
+        "com.google.inject:guice:5.1.0"
     ] + IO_GRPC_GRPC_JAVA_ARTIFACTS + PROTOBUF_MAVEN_ARTIFACTS,
     generate_compat_repositories = True,
     override_targets = IO_GRPC_GRPC_JAVA_OVERRIDE_TARGETS,

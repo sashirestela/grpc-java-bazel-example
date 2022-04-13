@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.encora.demo.routeguide;
+package com.encora.demo.routeguide.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -23,10 +23,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import com.encora.demo.routeguide.Feature;
+import com.encora.demo.routeguide.Point;
+import com.encora.demo.routeguide.Rectangle;
+import com.encora.demo.routeguide.RouteNote;
+import com.encora.demo.routeguide.RouteSummary;
 import com.google.protobuf.Message;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
-import com.encora.demo.routeguide.RouteGuideClient.TestHelper;
+import com.encora.demo.routeguide.client.RouteGuideClient.TestHelper;
 import com.encora.demo.routeguide.RouteGuideGrpc.RouteGuideImplBase;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
@@ -84,7 +89,7 @@ public class RouteGuideClientTest {
           return retVal;
         }
       };
-  private RouteGuideClient client;
+  private RouteGuideClient routeGuideClient;
 
   @Before
   public void setUp() throws Exception {
@@ -93,9 +98,9 @@ public class RouteGuideClientTest {
     // Use a mutable service registry for later registering the service impl for each test case.
     grpcCleanup.register(InProcessServerBuilder.forName(serverName)
         .fallbackHandlerRegistry(serviceRegistry).directExecutor().build().start());
-    client = new RouteGuideClient(grpcCleanup.register(
+    routeGuideClient = new RouteGuideClient(grpcCleanup.register(
         InProcessChannelBuilder.forName(serverName).directExecutor().build()));
-    client.setTestHelper(testHelper);
+    routeGuideClient.setTestHelper(testHelper);
   }
 
   /**
@@ -121,7 +126,7 @@ public class RouteGuideClientTest {
         };
     serviceRegistry.addService(getFeatureImpl);
 
-    client.getFeature(-1, -1);
+    routeGuideClient.getFeature(-1, -1);
 
     assertEquals(requestPoint, pointDelivered.get());
     verify(testHelper).onMessage(responseFeature);
@@ -148,7 +153,7 @@ public class RouteGuideClientTest {
         };
     serviceRegistry.addService(getFeatureImpl);
 
-    client.getFeature(-1, -1);
+    routeGuideClient.getFeature(-1, -1);
 
     assertEquals(requestPoint, pointDelivered.get());
     ArgumentCaptor<Throwable> errorCaptor = ArgumentCaptor.forClass(Throwable.class);
@@ -182,7 +187,7 @@ public class RouteGuideClientTest {
         };
     serviceRegistry.addService(listFeaturesImpl);
 
-    client.listFeatures(1, 2, 3, 4);
+    routeGuideClient.listFeatures(1, 2, 3, 4);
 
     assertEquals(Rectangle.newBuilder()
                      .setLo(Point.newBuilder().setLatitude(1).setLongitude(2).build())
@@ -220,7 +225,7 @@ public class RouteGuideClientTest {
         };
     serviceRegistry.addService(listFeaturesImpl);
 
-    client.listFeatures(1, 2, 3, 4);
+    routeGuideClient.listFeatures(1, 2, 3, 4);
 
     assertEquals(Rectangle.newBuilder()
                      .setLo(Point.newBuilder().setLatitude(1).setLongitude(2).build())
@@ -238,7 +243,7 @@ public class RouteGuideClientTest {
    */
   @Test
   public void recordRoute() throws Exception {
-    client.setRandom(noRandomness);
+    routeGuideClient.setRandom(noRandomness);
     Point point1 = Point.newBuilder().setLatitude(1).setLongitude(1).build();
     Point point2 = Point.newBuilder().setLatitude(2).setLongitude(2).build();
     Point point3 = Point.newBuilder().setLatitude(3).setLongitude(3).build();
@@ -288,7 +293,7 @@ public class RouteGuideClientTest {
     serviceRegistry.addService(recordRouteImpl);
 
     // send requestFeature1, requestFeature2, requestFeature3, and then requestFeature1 again
-    client.recordRoute(features, 4);
+    routeGuideClient.recordRoute(features, 4);
 
     assertEquals(
         Arrays.asList(
@@ -306,7 +311,7 @@ public class RouteGuideClientTest {
    */
   @Test
   public void recordRoute_serverError() throws Exception {
-    client.setRandom(noRandomness);
+    routeGuideClient.setRandom(noRandomness);
     Point point1 = Point.newBuilder().setLatitude(1).setLongitude(1).build();
     final Feature requestFeature1 =
         Feature.newBuilder().setLocation(point1).build();
@@ -339,7 +344,7 @@ public class RouteGuideClientTest {
         };
     serviceRegistry.addService(recordRouteImpl);
 
-    client.recordRoute(features, 4);
+    routeGuideClient.recordRoute(features, 4);
 
     ArgumentCaptor<Throwable> errorCaptor = ArgumentCaptor.forClass(Throwable.class);
     verify(testHelper).onRpcError(errorCaptor.capture());
@@ -388,7 +393,7 @@ public class RouteGuideClientTest {
     serviceRegistry.addService(routeChatImpl);
 
     // start routeChat
-    CountDownLatch latch = client.routeChat();
+    CountDownLatch latch = routeGuideClient.routeChat();
 
     // request message sent and delivered for four times
     assertTrue(allRequestsDelivered.await(1, TimeUnit.SECONDS));
@@ -455,7 +460,7 @@ public class RouteGuideClientTest {
         };
     serviceRegistry.addService(routeChatImpl);
 
-    client.routeChat().await(1, TimeUnit.SECONDS);
+    routeGuideClient.routeChat().await(1, TimeUnit.SECONDS);
 
     String[] messages =
         {"First message", "Second message", "Third message", "Fourth message"};
@@ -503,7 +508,7 @@ public class RouteGuideClientTest {
         };
     serviceRegistry.addService(routeChatImpl);
 
-    client.routeChat().await(1, TimeUnit.SECONDS);
+    routeGuideClient.routeChat().await(1, TimeUnit.SECONDS);
 
     assertEquals("First message", notesDelivered.get(0).getMessage());
     verify(testHelper, never()).onMessage(any(Message.class));

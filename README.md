@@ -1,7 +1,8 @@
-gRPC Java Bazel Example
-====================
+gRPC-Java, Bazel, Guice Example
+=======================
 
-This is a basic example to build/run/test a gRPC-Java project using Bazel. It is based on the [gRPC Java Basic Tutorial](https://grpc.io/docs/languages/java/basics/).
+This is a basic example to handle a [gRPC-Java](https://grpc.io/docs/languages/java/) project using [Bazel](https://bazel.build/) for building and [Guice](https://github.com/google/guice) for dependency injection.  
+It is based on the [gRPC-Java Basic Tutorial](https://grpc.io/docs/languages/java/basics/).
 
 ## Prerequisites
 
@@ -13,12 +14,20 @@ This is a basic example to build/run/test a gRPC-Java project using Bazel. It is
 
  - Clone the project locally and open the project [routeguide](https://github.com/sashirestela/grpc-java-bazel-example/tree/master/routeguide) in IntelliJ.
    
- - Follow the next instructions from the Bazel Plugin to [import the project](https://ij.bazel.build/docs/import-project.html) as a Bazel project.
+ - Follow the instructions from the Bazel Plugin to [import the project](https://ij.bazel.build/docs/import-project.html) as a Bazel project.
     
  - Build the project with the option: Bazel > Build > Compile Project.
     
- - Run and Test bthe project with [these steps](https://ij.bazel.build/docs/run-configurations.html).
+ - Run and Test the project with [these steps](https://ij.bazel.build/docs/run-configurations.html).
 
-## Project View in IntelliJ
+## Support for Bazel in IntelliJ
 
-![Poject View in IntelliJ](./images/routeguide-intellij.png)
+IntelliJ provide a basic support to build/test/run Bazel projects.
+
+![Support for Bazel in IntelliJ](./images/routeguide-intellij.png)
+
+## Test gRPC with BloomRPC
+
+[BloomRPC](https://github.com/bloomrpc/bloomrpc) is a GUI client for texting gRPC services.
+
+![Test gRPC with BloomRPC](./images/routeguide-bloomrpc.png)

@@ -41,13 +41,14 @@ java_library(
         "@maven//:com_google_code_findbugs_jsr305",
         "@maven//:com_google_code_gson_gson",
         "@maven//:com_google_guava_guava",
+        "@maven//:com_google_inject_guice",
     ],
 )
 
 java_binary(
     name = "route_guide_client",
     testonly = 1,
-    main_class = "com.encora.demo.routeguide.RouteGuideClient",
+    main_class = "com.encora.demo.routeguide.client.RouteGuideClient",
     runtime_deps = [
         ":route_guide_library",
     ],
@@ -56,7 +57,7 @@ java_binary(
 java_binary(
     name = "route_guide_server",
     testonly = 1,
-    main_class = "com.encora.demo.routeguide.RouteGuideServer",
+    main_class = "com.encora.demo.routeguide.server.RouteGuideServer",
     runtime_deps = [
         ":route_guide_library",
     ],
@@ -84,6 +85,7 @@ java_library(
         "@maven//:com_google_code_findbugs_jsr305",
         "@maven//:com_google_code_gson_gson",
         "@maven//:com_google_guava_guava",
+        "@maven//:com_google_inject_guice",
         "@maven//:junit_junit",
         "@maven//:org_mockito_mockito_core",
     ],
@@ -92,7 +94,7 @@ java_library(
 java_test(
     name = "route_guide_client_tests",
     testonly = 1,
-    test_class = "com.encora.demo.routeguide.RouteGuideClientTest",
+    test_class = "com.encora.demo.routeguide.client.RouteGuideClientTest",
     runtime_deps = [
         ":route_guide_test_library",
     ],
@@ -101,7 +103,7 @@ java_test(
 java_test(
     name = "route_guide_server_tests",
     testonly = 1,
-    test_class = "com.encora.demo.routeguide.RouteGuideServerTest",
+    test_class = "com.encora.demo.routeguide.server.RouteGuideServerTest",
     runtime_deps = [
         ":route_guide_test_library",
     ],

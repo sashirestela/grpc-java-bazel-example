@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.encora.demo.routeguide;
+package com.encora.demo.routeguide.server;
 
 import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
@@ -25,6 +25,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
+import com.encora.demo.routeguide.Feature;
+import com.encora.demo.routeguide.Point;
+import com.encora.demo.routeguide.Rectangle;
+import com.encora.demo.routeguide.RouteGuideGrpc;
+import com.encora.demo.routeguide.RouteNote;
+import com.encora.demo.routeguide.RouteSummary;
 import io.grpc.ManagedChannel;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
@@ -62,7 +68,7 @@ public class RouteGuideServerTest {
   @Rule
   public final GrpcCleanupRule grpcCleanup = new GrpcCleanupRule();
 
-  private RouteGuideServer server;
+  private RouteGuideServer routeGuideServer;
   private ManagedChannel inProcessChannel;
   private Collection<Feature> features;
 
@@ -74,9 +80,9 @@ public class RouteGuideServerTest {
     // Use directExecutor for both InProcessServerBuilder and InProcessChannelBuilder can reduce the
     // usage timeouts and latches in test. But we still add timeout and latches where they would be
     // needed if no directExecutor were used, just for demo purpose.
-    server = new RouteGuideServer(
-        InProcessServerBuilder.forName(serverName).directExecutor(), 0, features);
-    server.start();
+    routeGuideServer = new RouteGuideServer(
+        InProcessServerBuilder.forName(serverName).directExecutor(), 0, new RouteGuideService(features));
+    routeGuideServer.start();
     // Create a client channel and register for automatic graceful shutdown.
     inProcessChannel = grpcCleanup.register(
         InProcessChannelBuilder.forName(serverName).directExecutor().build());
@@ -84,7 +90,7 @@ public class RouteGuideServerTest {
 
   @After
   public void tearDown() throws Exception {
-    server.stop();
+    routeGuideServer.stop();
   }
 
   @Test

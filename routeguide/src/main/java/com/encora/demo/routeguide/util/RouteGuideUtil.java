@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package com.encora.demo.routeguide;
+package com.encora.demo.routeguide.util;
 
+import com.encora.demo.routeguide.Feature;
+import com.encora.demo.routeguide.FeatureDatabase;
+import com.encora.demo.routeguide.Point;
+import com.encora.demo.routeguide.server.RouteGuideServer;
 import com.google.protobuf.util.JsonFormat;
 import java.io.IOException;
 import java.io.InputStream;

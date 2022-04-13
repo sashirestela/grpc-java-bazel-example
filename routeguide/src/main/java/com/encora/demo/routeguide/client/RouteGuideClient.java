@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-package com.encora.demo.routeguide;
+package com.encora.demo.routeguide.client;
 
+import com.encora.demo.routeguide.Feature;
+import com.encora.demo.routeguide.Point;
+import com.encora.demo.routeguide.Rectangle;
+import com.encora.demo.routeguide.RouteGuideGrpc;
+import com.encora.demo.routeguide.RouteNote;
+import com.encora.demo.routeguide.RouteSummary;
+import com.encora.demo.routeguide.util.RouteGuideModule;
+import com.encora.demo.routeguide.util.RouteGuideUtil;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.protobuf.Message;
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import com.encora.demo.routeguide.RouteGuideGrpc.RouteGuideBlockingStub;
@@ -41,6 +51,7 @@ import java.util.logging.Logger;
 public class RouteGuideClient {
   private static final Logger logger = Logger.getLogger(RouteGuideClient.class.getName());
 
+  private final Channel channel;
   private final RouteGuideBlockingStub blockingStub;
   private final RouteGuideStub asyncStub;
 
@@ -48,7 +59,9 @@ public class RouteGuideClient {
   private TestHelper testHelper;
 
   /** Construct client for accessing RouteGuide server using the existing channel. */
+  @Inject
   public RouteGuideClient(Channel channel) {
+    this.channel = channel;
     blockingStub = RouteGuideGrpc.newBlockingStub(channel);
     asyncStub = RouteGuideGrpc.newStub(channel);
   }
@@ -163,7 +176,7 @@ public class RouteGuideClient {
         // Sleep for a bit before sending the next one.
         Thread.sleep(random.nextInt(1000) + 500);
         if (finishLatch.getCount() == 0) {
-          // RPC completed or errored before we finished sending.
+          // RPC completed or error before we finished sending.
           // Sending further requests won't error, but they will just be thrown away.
           return;
         }
@@ -240,17 +253,6 @@ public class RouteGuideClient {
 
   /** Issues several different requests and then exits. */
   public static void main(String[] args) throws InterruptedException {
-    String target = "localhost:8980";
-    if (args.length > 0) {
-      if ("--help".equals(args[0])) {
-        System.err.println("Usage: [target]");
-        System.err.println("");
-        System.err.println("  target  The server to connect to. Defaults to " + target);
-        System.exit(1);
-      }
-      target = args[0];
-    }
-
     List<Feature> features;
     try {
       features = RouteGuideUtil.parseFeatures(RouteGuideUtil.getDefaultFeaturesFile());
@@ -259,29 +261,29 @@ public class RouteGuideClient {
       return;
     }
 
-    ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+    Injector injector = Guice.createInjector(new RouteGuideModule());
+    RouteGuideClient routeGuideClient = injector.getInstance(RouteGuideClient.class);
     try {
-      RouteGuideClient client = new RouteGuideClient(channel);
       // Looking for a valid feature
-      client.getFeature(409146138, -746188906);
+      routeGuideClient.getFeature(409146138, -746188906);
 
       // Feature missing.
-      client.getFeature(0, 0);
+      routeGuideClient.getFeature(0, 0);
 
       // Looking for features between 40, -75 and 42, -73.
-      client.listFeatures(400000000, -750000000, 420000000, -730000000);
+      routeGuideClient.listFeatures(400000000, -750000000, 420000000, -730000000);
 
       // Record a few randomly selected points from the features file.
-      client.recordRoute(features, 10);
+      routeGuideClient.recordRoute(features, 10);
 
       // Send and receive some notes.
-      CountDownLatch finishLatch = client.routeChat();
+      CountDownLatch finishLatch = routeGuideClient.routeChat();
 
       if (!finishLatch.await(1, TimeUnit.MINUTES)) {
-        client.warning("routeChat can not finish within 1 minutes");
+        routeGuideClient.warning("routeChat can not finish within 1 minutes");
       }
     } finally {
-      channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+      ((ManagedChannel)routeGuideClient.channel).shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
     }
   }
 
