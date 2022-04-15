@@ -2,7 +2,7 @@ gRPC-Java, Bazel, Guice Example
 =======================
 
 This is a basic example to handle a [gRPC-Java](https://grpc.io/docs/languages/java/) project using [Bazel](https://bazel.build/) for building and [Guice](https://github.com/google/guice) for dependency injection.  
-It is based on the [gRPC-Java Basic Tutorial](https://grpc.io/docs/languages/java/basics/).
+It is based on the [gRPC-Java Basic Tutorial](https://grpc.io/docs/languages/java/basics/) but turned in a monorepo divided in many Bazel packages.
 
 ## Prerequisites
 
@@ -28,6 +28,12 @@ IntelliJ provide a basic support to build/test/run Bazel projects.
 
 ## Test gRPC with BloomRPC
 
-[BloomRPC](https://github.com/bloomrpc/bloomrpc) is a GUI client for texting gRPC services.
+[BloomRPC](https://github.com/bloomrpc/bloomrpc) is a GUI client for testing gRPC services.
 
 ![Test gRPC with BloomRPC](./images/routeguide-bloomrpc.png)
+
+## Bazel Basic Concepts
+
+The image depicts the relationship between many Bazel concepts.
+
+![Bazel Basic Concepts](./images/bazel_basic_concepts.png)

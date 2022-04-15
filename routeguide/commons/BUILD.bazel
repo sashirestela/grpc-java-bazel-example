@@ -1,0 +1,13 @@
+java_library(
+    name = "route_guide_util_library",
+    srcs = glob(["src/main/java/**/*.java"]),
+    resources = glob(["src/main/resources/**"]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto:route_guide_java_proto",
+        "@com_google_protobuf//:protobuf_java",
+        "@com_google_protobuf//:protobuf_java_util",
+        "@maven//:com_google_api_grpc_proto_google_common_protos",
+        "@maven//:com_google_code_findbugs_jsr305",
+    ],
+)

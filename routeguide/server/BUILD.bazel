@@ -1,0 +1,29 @@
+load("//:shared_constants.bzl", "ROUTE_GUIDE_DEPS")
+
+java_library(
+    name = "route_guide_library",
+    testonly = 1,
+    srcs = glob([
+        "src/main/java/**/*.java",
+        "src/test/java/**/*.java",
+    ]),
+    visibility = ["//visibility:public"],
+    runtime_deps = [
+        "@io_grpc_grpc_java//netty",
+    ],
+    deps = ROUTE_GUIDE_DEPS,
+)
+
+java_binary(
+    name = "route_guide_server",
+    testonly = 1,
+    main_class = "com.encora.demo.routeguide.server.RouteGuideServer",
+    runtime_deps = [":route_guide_library"],
+)
+
+java_test(
+    name = "route_guide_server_tests",
+    testonly = 1,
+    test_class = "com.encora.demo.routeguide.server.RouteGuideServerTest",
+    runtime_deps = [":route_guide_library"],
+)
